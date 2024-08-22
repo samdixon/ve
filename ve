@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+venv_manager() {
+    local output
+    output=$(ve)
+    
+    if [[ $output == source* ]]; then
+        eval "$output"
+        echo "activated $output"
+    elif [[ $output == *__FZF_SELECTION_REQUIRED__* ]]; then
+        local selected_dir
+        selected_dir=$(echo "$output" | grep -v "__FZF_SELECTION_REQUIRED__" | fzf --height 40% --reverse)
+        if [[ -n $selected_dir ]]; then
+            cd "$selected_dir" && venv_manager
+            cd - > /dev/null
+        else
+            echo "No virtual environment selected."
+        fi
+    fi
+}
